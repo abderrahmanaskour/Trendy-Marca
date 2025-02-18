@@ -1,23 +1,7 @@
-name: trendymarca
-description: A new Flutter project to display products and handle ads.
-
-dependencies:
-  flutter:
-    sdk: flutter
-  flutter_localizations:
-    sdk: flutter
-  provider: ^6.0.5
-
-flutter:
-  assets:
-    - assets/images/
-
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'about_page.dart';
-import 'add_product_page.dart';
-import 'product_details_page.dart';
+import 'home_page.dart';
 
 void main() {
   runApp(MyApp());
@@ -28,34 +12,47 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Trendy Marka',
-      theme: ThemeData(primarySwatch: Colors.blue),
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+      ),
       localizationsDelegates: [
+        AppLocalizations.delegate,
         GlobalMaterialLocalizations.delegate,
         GlobalWidgetsLocalizations.delegate,
-        AppLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
       ],
       supportedLocales: [
-        Locale('en', 'US'),
-        Locale('fr', 'FR'),
-        Locale('ar', 'SA'),
+        Locale('fr'),
+        Locale('ar'),
+        Locale('en'),
       ],
       home: HomePage(),
     );
   }
 }
 
+
+---
+
+import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'about_page.dart';
+import 'add_product_page.dart';
+import 'product_details_page.dart';
+
 class HomePage extends StatelessWidget {
   final List<Map<String, dynamic>> products = [
     {
-      'name': 'Product 1',
+      'name': 'Produit 1',
       'price': 100,
-      'location': 'City 1',
+      'location': 'Ville 1',
       'image': 'https://via.placeholder.com/150',
     },
     {
-      'name': 'Product 2',
+      'name': 'Produit 2',
       'price': 200,
-      'location': 'City 2',
+      'location': 'Ville 2',
       'image': 'https://via.placeholder.com/150',
     },
   ];
@@ -153,7 +150,7 @@ class _AddProductPageState extends State<AddProductPage> {
                 onChanged: (value) => _name = value,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Please enter the product name';
+                    return localizations.enterProductName;
                   }
                   return null;
                 },
@@ -168,7 +165,7 @@ class _AddProductPageState extends State<AddProductPage> {
                 onChanged: (value) => _price = double.tryParse(value) ?? 0,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Please enter the price';
+                    return localizations.enterPrice;
                   }
                   return null;
                 },
@@ -182,7 +179,7 @@ class _AddProductPageState extends State<AddProductPage> {
                 onPressed: () {
                   if (_formKey.currentState!.validate()) {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('Product added successfully!')),
+                      SnackBar(content: Text(localizations.productAdded)),
                     );
                     Navigator.pop(context);
                   }
@@ -229,10 +226,10 @@ class ProductDetailsPage extends StatelessWidget {
             ElevatedButton(
               onPressed: () {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('Product purchased!')),
+                  SnackBar(content: Text(localizations.productPurchased)),
                 );
               },
-              child: Text('Buy Now'),
+              child: Text(localizations.buyNow),
             ),
           ],
         ),
@@ -270,6 +267,29 @@ class AboutPage extends StatelessWidget {
 
 
 ---
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
