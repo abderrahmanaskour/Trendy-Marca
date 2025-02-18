@@ -1,0 +1,276 @@
+name: trendymarca
+description: A new Flutter project to display products and handle ads.
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+  provider: ^6.0.5
+
+flutter:
+  assets:
+    - assets/images/
+
+import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'about_page.dart';
+import 'add_product_page.dart';
+import 'product_details_page.dart';
+
+void main() {
+  runApp(MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Trendy Marka',
+      theme: ThemeData(primarySwatch: Colors.blue),
+      localizationsDelegates: [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        AppLocalizations.delegate,
+      ],
+      supportedLocales: [
+        Locale('en', 'US'),
+        Locale('fr', 'FR'),
+        Locale('ar', 'SA'),
+      ],
+      home: HomePage(),
+    );
+  }
+}
+
+class HomePage extends StatelessWidget {
+  final List<Map<String, dynamic>> products = [
+    {
+      'name': 'Product 1',
+      'price': 100,
+      'location': 'City 1',
+      'image': 'https://via.placeholder.com/150',
+    },
+    {
+      'name': 'Product 2',
+      'price': 200,
+      'location': 'City 2',
+      'image': 'https://via.placeholder.com/150',
+    },
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(localizations.appTitle),
+      ),
+      body: ListView.builder(
+        itemCount: products.length,
+        itemBuilder: (context, index) {
+          final product = products[index];
+          return Card(
+            margin: EdgeInsets.all(8),
+            child: ListTile(
+              leading: Image.network(product['image']),
+              title: Text(product['name']),
+              subtitle: Text('${localizations.price}: \$${product['price']}\n${localizations.location}: ${product['location']}'),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => ProductDetailsPage(product: product),
+                  ),
+                );
+              },
+            ),
+          );
+        },
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => AddProductPage()),
+          );
+        },
+        child: Icon(Icons.add),
+      ),
+      drawer: Drawer(
+        child: ListView(
+          children: [
+            ListTile(
+              title: Text(localizations.aboutTitle),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => AboutPage()),
+                );
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+
+---
+
+import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
+class AddProductPage extends StatefulWidget {
+  @override
+  _AddProductPageState createState() => _AddProductPageState();
+}
+
+class _AddProductPageState extends State<AddProductPage> {
+  final _formKey = GlobalKey<FormState>();
+  String _name = '';
+  String _description = '';
+  double _price = 0;
+  String _location = '';
+
+  @override
+  Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(localizations.addProduct),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Form(
+          key: _formKey,
+          child: Column(
+            children: [
+              TextFormField(
+                decoration: InputDecoration(labelText: localizations.productName),
+                onChanged: (value) => _name = value,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter the product name';
+                  }
+                  return null;
+                },
+              ),
+              TextFormField(
+                decoration: InputDecoration(labelText: localizations.description),
+                onChanged: (value) => _description = value,
+              ),
+              TextFormField(
+                decoration: InputDecoration(labelText: localizations.price),
+                keyboardType: TextInputType.number,
+                onChanged: (value) => _price = double.tryParse(value) ?? 0,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter the price';
+                  }
+                  return null;
+                },
+              ),
+              TextFormField(
+                decoration: InputDecoration(labelText: localizations.location),
+                onChanged: (value) => _location = value,
+              ),
+              SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: () {
+                  if (_formKey.currentState!.validate()) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('Product added successfully!')),
+                    );
+                    Navigator.pop(context);
+                  }
+                },
+                child: Text(localizations.addProduct),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+
+---
+
+import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
+class ProductDetailsPage extends StatelessWidget {
+  final Map<String, dynamic> product;
+
+  ProductDetailsPage({required this.product});
+
+  @override
+  Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(product['name']),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Image.network(product['image']),
+            SizedBox(height: 20),
+            Text('${localizations.productName}: ${product['name']}'),
+            Text('${localizations.price}: \$${product['price']}'),
+            Text('${localizations.location}: ${product['location']}'),
+            SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: () {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text('Product purchased!')),
+                );
+              },
+              child: Text('Buy Now'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+
+---
+
+import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
+class AboutPage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(localizations.aboutTitle),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(localizations.appDescription),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+
+---
+
+
+
+
